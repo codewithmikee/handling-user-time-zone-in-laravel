@@ -1,61 +1,166 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel API Starter Template
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A robust Laravel API starter template with built-in authentication, standardized JSON responses, and extendable controllers. Ideal for quickly bootstrapping secure and maintainable RESTful APIs.
 
-## About Laravel
+**Author**: Mikiyas Birhanu  
+**GitHub**: [@codewithmikee](https://github.com/codewithmikee)  
+**Repo**: [github.com/codewithmikee/laravel-backend-starter-template](https://github.com/codewithmikee/laravel-backend-starter-template)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# API Documentation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+API documentation and collections (Postman, Swagger/OpenAPI) are stored in the `docs/` folder at the project root.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📦 API Collections
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Postman Collection:**
+  - File: `docs/postman_collection.json`
+  - Import this file into Postman to test all API endpoints quickly.
+  - Includes example requests for registration, login, and profile fetch.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Swagger/OpenAPI Spec:**
+  - File: `docs/swagger.yaml`
+  - Use with Swagger UI, Redoc, or compatible tools for interactive API docs and code generation.
+  - Describes all endpoints, request/response formats, and authentication requirements.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## ✨ Features
+- **Sanctum Authentication**: Ready-to-use JWT-like token-based auth.
+- **Standardized Responses**: Consistent JSON success/error formats.
+- **Pre-configured Error Handling**: Automatic exceptions for:
+  - Validation (422)
+  - Authorization (403)
+  - Rate Limiting (429)
+  - Model/Route Not Found (404)
+- **Extendable Base Controllers**: Simplify CRUD operations with:
+  - `BaseApiController` (General APIs)
+  - `ProtectedApiController` (Auth-required endpoints)
+- **Middleware**: Ensures all responses are JSON-formatted.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🚀 Quick Start
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1. Clone & Setup
+```bash
+git clone https://github.com/codewithmikee/laravel-backend-starter-template.git
+cd laravel-backend-starter-template
+cp .env.example .env
+composer install
+php artisan key:generate
+```
 
-## Contributing
+### 2. Configure Database
+Update `.env` with your database credentials:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Run Migrations
+```bash
+php artisan migrate
+```
 
-## Code of Conduct
+### 4. Sanctum Setup
+```bash
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 🔧 Usage
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Authentication Endpoints
+**Register**  
+`POST /api/register`
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "secret123"
+}
+```
 
-## License
+**Login**  
+`POST /api/login`
+```json
+{
+  "email": "john@example.com",
+  "password": "secret123",
+  "device_name": "iPhone"
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Profile (Protected)**  
+`GET /api/profile`  
+*Header:* `Authorization: Bearer <token>`
+
+---
+
+## 🛠 Extending Controllers
+### 1. Create a Protected Controller
+```php
+use App\Http\Controllers\Api\ProtectedApiController;
+
+class UserController extends ProtectedApiController
+{
+    public function index()
+    {
+        return $this->handleRequest(
+            fn() => User::all(),
+            $this->request,
+            'Users fetched successfully'
+        );
+    }
+}
+```
+
+### 2. Custom Error Responses
+Throw errors directly in controllers:
+```php
+$this->errorResponse('Resource not found', 404);
+```
+
+---
+
+## 📜 Response Format
+**Success**  
+```json
+{
+  "status": true,
+  "message": "Profile fetched successfully",
+  "data": { "name": "John", "email": "john@example.com" },
+  "errors": null
+}
+```
+
+**Error**  
+```json
+{
+  "status": false,
+  "message": "Unauthorized",
+  "data": null,
+  "errors": ["authorization": "Unauthenticated"]
+}
+```
+
+---
+
+## 📌 Best Practices
+- Use `BaseApiController` for general endpoints.
+- Extend `ProtectedApiController` for auth-required routes.
+- Utilize `validateRequest()` in controllers for validation.
+- Environment-specific errors: Full details in `local/staging`, generic in `production`.
+
+---
+
+**Happy Coding!** 🚀  
+*Maintained by [Mikiyas Birhanu](https://github.com/codewithmikee)*
+```
