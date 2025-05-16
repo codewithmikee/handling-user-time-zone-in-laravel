@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ApiControllerTest;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,4 +16,10 @@ Route::prefix('auth')->group(function () {
 
 Route::prefix('profile')->group(function () {
     Route::get('/', [ProfileController::class, 'index']);
+})->middleware('auth:sanctum');
+
+
+Route::prefix('posts')->group(function () {
+    Route::get('/', [PostController::class, 'index']);
+    Route::post('/', [PostController::class, 'store']);
 })->middleware('auth:sanctum');

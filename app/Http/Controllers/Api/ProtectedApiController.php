@@ -10,9 +10,10 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-
+use App\Http\Controllers\Concerns\{HandlesAuth};
 class ProtectedApiController extends BaseApiController
 {
+    use  HandlesAuth;
     /**
      * Constructor injects the current HTTP request and ensures parent initialization.
      *

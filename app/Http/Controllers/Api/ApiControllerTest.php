@@ -9,8 +9,6 @@ class ApiControllerTest extends BaseApiController
 {
     public function index(Request $request)
     {
-        return $this->handleRequest( function() {
-            return response()->json(['message' => 'Hello, Laravel API!']);
-        }, $request, 'Hello, Laravel API!');
+        return $this->respondSuccess(null, 'Hello, Laravel API!');
     }
 }

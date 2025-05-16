@@ -19,6 +19,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -49,6 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
          * Returns standardized JSON error responses for common exception types.
          */
         $exceptions->render(function (Throwable $exception, $request) {
+            Log::error('Exception class: ' . get_class($exception));
             // Validation errors (422)
             if ($exception instanceof ValidationException) {
                 return response()->json([
@@ -118,6 +120,16 @@ return Application::configure(basePath: dirname(__DIR__))
                     'data' => null,
                     'errors' => [],
                 ], $exception->getStatusCode());
+            }
+
+            // Authentication errors (401)
+            if ($exception instanceof Illuminate\Auth\AuthenticationException) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated',
+                    'data' => null,
+                    'errors' => ['authorization' => $exception->getMessage()],
+                ], 401);
             }
 
             // Catch-all for unhandled exceptions (500)

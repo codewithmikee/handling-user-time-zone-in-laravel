@@ -9,17 +9,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Concerns\HandlesResponses;
+use App\Http\Controllers\Concerns\{HandlesApiResponse,  HandlesValidation};
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
-use App\Support\ResponseUtils;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+    use Illuminate\Validation\ValidationException;
 
 class BaseApiController extends Controller
 {
-    use HandlesResponses;
+    use HandlesApiResponse,  HandlesValidation;
+
     /** @var Request The request instance available to all methods */
     protected $request;
 
@@ -37,8 +35,6 @@ class BaseApiController extends Controller
     public function __construct(Request $request)
     {
         $this->request = $request;
-        // Enable verbose errors in local or staging environments
-        $this->shouldThrowVerboseErrors = app()->environment(['local', 'staging']);
     }
 
     /**
@@ -52,28 +48,9 @@ class BaseApiController extends Controller
      *
      * This method uses Laravel's Validator to check the request data. Throws a ValidationException if validation fails.
      */
-    public function validateRequest(array $rules, array $messages = [], $data = null)
+    public function validateRequest(Request $request, array $rules, array $messages = [])
     {
-        $data = $data ?? $this->request?->all();
-        $validator = Validator::make($data, $rules, $messages);
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-
-        return $validator->validated();
-    }
-
-    /**
-     * Retrieve the currently authenticated user for the API request.
-     *
-     * @return \App\Models\User|null
-     *
-     * Uses ResponseUtils to get the user from the request (Sanctum guard).
-     */
-    public function getCurrentUser()
-    {
-        return ResponseUtils::getCurrentApiRequestAuthUser($this->request);
+        return $this->validate($request->all(), $rules, $messages);
     }
 
     /**
@@ -97,31 +74,11 @@ class BaseApiController extends Controller
                 }
             }
             // Otherwise, wrap in a standardized success response
-            return $this->successResponse($response, $message);
+            return $this->respondSuccess($response, $message);
         } catch (\Throwable $e) {
             // Handle and log exceptions
-            return $this->handleException($e);
+            return $this->respondInternalError($e);
         }
     }
 
-    /**
-     * Handles exceptions and returns a standardized error response.
-     *
-     * @param \Throwable $th
-     * @return \Illuminate\Http\JsonResponse
-     *
-     * Logs the error and, if in a verbose environment, rethrows. Otherwise, returns a generic error response.
-     */
-    public function handleException(\Throwable $th)
-    {
-        Log::error($th);
-        if ($this->shouldThrowVerboseErrors) {
-            throw $th;
-        }
-        return response()->json([
-            'status' => false,
-            'message' => 'Unknown error occurred',
-            'error' => 'Something went wrong please try again',
-        ], 500);
-    }
 }

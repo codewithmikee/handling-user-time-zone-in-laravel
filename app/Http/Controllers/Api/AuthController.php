@@ -11,7 +11,7 @@ class AuthController extends BaseApiController
     public function register(Request $request)
     {
         return $this->handleRequest(  function() use ($request) {
-            $validated = $this->validateRequest([
+            $validated = $this->validateRequest($request, [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|unique:users',
                 'password' => 'required|string|min:8'
@@ -33,7 +33,7 @@ class AuthController extends BaseApiController
     public function login(Request $request)
     {
         return $this->handleRequest( function() use ($request) {
-            $validated = $this->validateRequest([
+            $validated = $this->validateRequest($request, [
                 'email' => 'required|email',
                 'password' => 'required'
             ]);
@@ -41,7 +41,7 @@ class AuthController extends BaseApiController
             $user = User::where('email', $validated['email'])->first();
 
             if (! $user || ! Hash::check($validated['password'], $user->password)) {
-                $this->errorResponse('Invalid credentials', 401);
+                return $this->respondError('Invalid credentials', 401);
             }
 
             return $user->createToken($request->device_name)->plainTextToken;

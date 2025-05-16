@@ -13,12 +13,12 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 
-class ProfileController extends BaseApiController
+class ProfileController extends ProtectedApiController
 {
     public function index(Request $request)
     {
         return $this->handleRequest( function() use ($request) {
-            return $this->getCurrentUser()->only('name', 'email');
+            return $this->currentUser()->only('name', 'email');
         }, $request, 'Profile fetched successfully');
     }
 }
