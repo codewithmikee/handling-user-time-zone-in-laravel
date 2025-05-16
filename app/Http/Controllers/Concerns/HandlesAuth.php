@@ -7,19 +7,25 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\User;
 
+/**
+ * Trait HandlesAuth
+ *
+ * Provides helper methods for retrieving the authenticated user and throwing
+ * standardized authentication/authorization error responses. Use in protected controllers.
+ */
 trait HandlesAuth
 {
     use AuthorizesRequests;
 
     /**
-     * Get authenticated user with type hinting
+     * Get the currently authenticated user (type-hinted).
      *
-     * @throws HttpResponseException
+     * @return User
+     * @throws HttpResponseException If not authenticated
      */
     protected function currentUser(): User
     {
-
-        // if there is request object, get user from request
+        // If there is a request object, get user from request; otherwise use auth('sanctum')
         if (isset($this->request)) {
             $user = $this->request->user();
         } else {
@@ -30,11 +36,12 @@ trait HandlesAuth
             $this->throwUnAuthenticated();
         }
 
+        // Always return a fresh User instance
         return User::find($user->id)->first();
     }
 
     /**
-     * Throw formatted unauthenticated response
+     * Throw a formatted unauthenticated response (HTTP 401).
      *
      * @param string $message
      * @throws HttpResponseException
@@ -50,7 +57,7 @@ trait HandlesAuth
     }
 
     /**
-     * Throw formatted unauthorized response
+     * Throw a formatted unauthorized response (HTTP 403).
      *
      * @param string $message
      * @throws AuthorizationException

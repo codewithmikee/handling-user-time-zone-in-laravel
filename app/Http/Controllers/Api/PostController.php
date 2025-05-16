@@ -7,9 +7,20 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostResource;
 use Throwable;
 use Illuminate\Http\Request;
+
+/**
+ * Controller for managing posts (example resource).
+ *
+ * Demonstrates usage of handleRequest and standardized API responses.
+ */
 class PostController extends ProtectedApiController
 {
-    // WRAPPED TO HANDLE REQUEST BUT RETURNING CUSTOM RESPONSE
+    /**
+     * List paginated posts with standardized response.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         return $this->handleRequest(function() use ($request) {
@@ -24,12 +35,15 @@ class PostController extends ProtectedApiController
         }, $request, 'Posts fetched successfully');
     }
 
-    // WITHOUT WRAPPING TO HANDLE REQUEST
+    /**
+     * Store a new post (auto-validated by StorePostRequest).
+     *
+     * @param StorePostRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(StorePostRequest $request)
     {
         // Auto-validated by StorePostRequest
-
-
         $this->authorize('create', Post::class);
 
         $post = Post::create($request->validated());

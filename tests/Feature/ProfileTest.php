@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
 class ProfileTest extends TestCase
 {
@@ -20,8 +21,8 @@ class ProfileTest extends TestCase
         ]);
         $token = $user->createToken('test-token')->plainTextToken;
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->getJson('/api/profile/');
+        Sanctum::actingAs($user);
+        $response = $this->getJson('/api/profile/');
 
         $response->assertStatus(200)
             ->assertJsonStructure([

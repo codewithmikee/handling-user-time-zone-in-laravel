@@ -6,11 +6,22 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Controller for authentication endpoints (register, login).
+ *
+ * Uses BaseApiController for standardized validation and responses.
+ */
 class AuthController extends BaseApiController
 {
+    /**
+     * Register a new user and return user data with token.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function register(Request $request)
     {
-        return $this->handleRequest(  function() use ($request) {
+        return $this->handleRequest(function() use ($request) {
             $validated = $this->validateRequest($request, [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|unique:users',
@@ -30,9 +41,15 @@ class AuthController extends BaseApiController
         }, $request, 'User registered successfully');
     }
 
+    /**
+     * Login a user and return an access token.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request)
     {
-        return $this->handleRequest( function() use ($request) {
+        return $this->handleRequest(function() use ($request) {
             $validated = $this->validateRequest($request, [
                 'email' => 'required|email',
                 'password' => 'required'

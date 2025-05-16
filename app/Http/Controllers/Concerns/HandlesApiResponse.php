@@ -6,8 +6,20 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\AbstractPaginator;
 use Throwable;
 
+/**
+ * Trait HandlesApiResponse
+ *
+ * Provides standardized JSON response methods for API controllers, including
+ * success, error, pagination, and internal error handling. Use this trait
+ * in controllers to ensure consistent API responses.
+ */
 trait HandlesApiResponse
 {
+    /**
+     * Determine if verbose errors should be thrown (for local/staging environments).
+     *
+     * @return bool
+     */
     public function shouldThrowVerboseErrors()
     {
         // if the environment is local or staging, throw verbose errors update in .env
@@ -28,14 +40,16 @@ trait HandlesApiResponse
             'success' => true,
             'data'    => $data,
             'message' => $message,
+            'errors'  => null,
         ], $status);
     }
 
     /**
-     * Format paginated API responses
+     * Format paginated API responses with meta information.
      *
      * @param AbstractPaginator $paginatedData
      * @param string|null $resourceClass  API Resource class for transformation
+     * @param string $message Optional message
      * @return JsonResponse
      */
     protected function respondWithPagination(AbstractPaginator $paginatedData, ?string $resourceClass = null, string $message = ''): JsonResponse
@@ -57,7 +71,8 @@ trait HandlesApiResponse
     }
 
     /**
-     * Handle internal server errors
+     * Handle internal server errors and return a standardized error response.
+     * Throws the exception in local/staging for easier debugging.
      *
      * @param Throwable $exception
      * @return JsonResponse
@@ -71,7 +86,7 @@ trait HandlesApiResponse
             $message = 'Something went wrong. Please try again later.';
         }
 
-        return $this->respond(null, $message, 500);
+        return $this->respondError($message, 500);
     }
 
     /**
@@ -96,8 +111,7 @@ trait HandlesApiResponse
         ], $code);
     }
 
-
-     /**
+    /**
      * Check if the given response data is a valid Laravel response type.
      *
      * @param mixed $responseData

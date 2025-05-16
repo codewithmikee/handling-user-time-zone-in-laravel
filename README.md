@@ -1,6 +1,6 @@
 # Laravel API Starter Template
 
-A robust Laravel API starter template with built-in authentication, standardized JSON responses, and extendable controllers. Ideal for quickly bootstrapping secure and maintainable RESTful APIs.
+A robust Laravel API starter template with built-in authentication, standardized JSON responses, and extendable controllers using reusable traits. Ideal for quickly bootstrapping secure and maintainable RESTful APIs.
 
 **Author**: Mikiyas Birhanu  
 **GitHub**: [@codewithmikee](https://github.com/codewithmikee)  
@@ -28,7 +28,7 @@ API documentation and collections (Postman, Swagger/OpenAPI) are stored in the `
 
 ## ✨ Features
 - **Sanctum Authentication**: Ready-to-use JWT-like token-based auth.
-- **Standardized Responses**: Consistent JSON success/error formats.
+- **Standardized Responses**: Consistent JSON success/error formats via traits.
 - **Pre-configured Error Handling**: Automatic exceptions for:
   - Validation (422)
   - Authorization (403)
@@ -37,6 +37,10 @@ API documentation and collections (Postman, Swagger/OpenAPI) are stored in the `
 - **Extendable Base Controllers**: Simplify CRUD operations with:
   - `BaseApiController` (General APIs)
   - `ProtectedApiController` (Auth-required endpoints)
+- **Reusable Controller Traits**: 
+  - `HandlesApiResponse`: Standardizes API responses
+  - `HandlesValidation`: Centralizes validation logic
+  - `HandlesAuth`: Authenticated user and authorization helpers
 - **Middleware**: Ensures all responses are JSON-formatted.
 
 ---
@@ -79,7 +83,7 @@ php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 
 ### Authentication Endpoints
 **Register**  
-`POST /api/register`
+`POST /api/auth/register`
 ```json
 {
   "name": "John Doe",
@@ -89,7 +93,7 @@ php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 ```
 
 **Login**  
-`POST /api/login`
+`POST /api/auth/login`
 ```json
 {
   "email": "john@example.com",
@@ -104,7 +108,7 @@ php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 
 ---
 
-## 🛠 Extending Controllers
+## 🛠 Extending Controllers & Traits
 ### 1. Create a Protected Controller
 ```php
 use App\Http\Controllers\Api\ProtectedApiController;
@@ -122,10 +126,21 @@ class UserController extends ProtectedApiController
 }
 ```
 
-### 2. Custom Error Responses
+### 2. Use Traits for Custom Logic
+```php
+use App\Http\Controllers\Concerns\HandlesApiResponse;
+
+class CustomController extends Controller
+{
+    use HandlesApiResponse;
+    // ...
+}
+```
+
+### 3. Custom Error Responses
 Throw errors directly in controllers:
 ```php
-$this->errorResponse('Resource not found', 404);
+$this->respondError('Resource not found', 404);
 ```
 
 ---
@@ -134,7 +149,7 @@ $this->errorResponse('Resource not found', 404);
 **Success**  
 ```json
 {
-  "status": true,
+  "success": true,
   "message": "Profile fetched successfully",
   "data": { "name": "John", "email": "john@example.com" },
   "errors": null
@@ -144,10 +159,10 @@ $this->errorResponse('Resource not found', 404);
 **Error**  
 ```json
 {
-  "status": false,
+  "success": false,
   "message": "Unauthorized",
   "data": null,
-  "errors": ["authorization": "Unauthenticated"]
+  "errors": {"authorization": "Unauthenticated"}
 }
 ```
 
@@ -157,6 +172,7 @@ $this->errorResponse('Resource not found', 404);
 - Use `BaseApiController` for general endpoints.
 - Extend `ProtectedApiController` for auth-required routes.
 - Utilize `validateRequest()` in controllers for validation.
+- Use controller traits for reusable logic.
 - Environment-specific errors: Full details in `local/staging`, generic in `production`.
 
 ---

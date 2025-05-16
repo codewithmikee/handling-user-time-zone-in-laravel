@@ -9,14 +9,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Concerns\{HandlesApiResponse,  HandlesValidation};
+use App\Http\Controllers\Concerns\{HandlesApiResponse, HandlesValidation};
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-    use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\ValidationException;
 
+/**
+ * Class BaseApiController
+ *
+ * Provides reusable API controller logic, including request validation and
+ * standardized response/error handling. Extend this class for all API controllers.
+ */
 class BaseApiController extends Controller
 {
-    use HandlesApiResponse,  HandlesValidation;
+    use HandlesApiResponse, HandlesValidation;
 
     /** @var Request The request instance available to all methods */
     protected $request;
@@ -40,9 +46,9 @@ class BaseApiController extends Controller
     /**
      * Validate the request data against given rules.
      *
+     * @param Request $request The HTTP request
      * @param array $rules Validation rules
      * @param array $messages Custom validation messages (optional)
-     * @param array|null $data Data to validate (defaults to request data if null)
      * @return array Validated data
      * @throws ValidationException If validation fails
      *
@@ -57,12 +63,13 @@ class BaseApiController extends Controller
      * Handles execution of a function with standardized success/error response.
      *
      * @param callable $functionToRun The function to execute
+     * @param Request|null $request The HTTP request (optional)
      * @param string $message Success message to return
      * @return \Illuminate\Http\JsonResponse|mixed
      *
      * This method wraps the function execution in a try/catch, returning a success response or handling exceptions.
      */
-    public function handleRequest( $functionToRun, $request = null, string $message = 'Operation successful')
+    public function handleRequest($functionToRun, $request = null, string $message = 'Operation successful')
     {
         try {
             $request = $request ?? $this->request;
@@ -80,5 +87,4 @@ class BaseApiController extends Controller
             return $this->respondInternalError($e);
         }
     }
-
 }
