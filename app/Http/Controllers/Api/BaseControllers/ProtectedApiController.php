@@ -8,7 +8,7 @@
  * This file defines the ProtectedApiController which extends BaseApiController and applies authentication middleware for protected API endpoints.
  */
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\BaseControllers;
 
 use App\Concerns\HandlesAuth;
 use Illuminate\Http\Request;

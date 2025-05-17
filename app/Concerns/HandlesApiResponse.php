@@ -178,10 +178,8 @@ trait HandlesApiResponse
             return self::throwUnAuthenticated('Unauthenticated', ['authorization' => $exception->getMessage()]);
         }
 
-        // Catch-all for unhandled exceptions (500)
-        if ($request->expectsJson()) { // if the request is json and the verbose errors are not thrown, return a generic error message
-            return self::throwOrReturnInternalError($exception);
-        }
+
+        return self::throwOrReturnInternalError($exception);
 
     }
 
@@ -257,9 +255,18 @@ trait HandlesApiResponse
         $errors = [];
         // for testing purposes, throw the exception
         if (self::shouldThrowVerboseErrors()) {
-            throw $exception;
-        } else {
-            $message = 'Something went wrong. Please try again later.';
+            return self::respondFormattedError('Internal server error', 500, [
+                'error' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+            ]);
+        }
+
+        $message = 'Something went wrong. Please try again later.';
+
+        if (config('app.env') !== 'production') {
+            $message = $exception->getMessage();
         }
 
         return self::respondFormattedError($message, 500);

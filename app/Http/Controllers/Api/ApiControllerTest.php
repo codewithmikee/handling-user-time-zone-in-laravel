@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\BaseControllers\BaseApiController;
 use Illuminate\Http\Request;
 
 class ApiControllerTest extends BaseApiController

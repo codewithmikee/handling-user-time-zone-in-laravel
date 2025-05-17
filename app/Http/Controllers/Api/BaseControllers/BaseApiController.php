@@ -8,7 +8,7 @@
  * This file defines the BaseApiController which provides common API controller utilities such as request validation, user retrieval, and standardized response/error handling for API endpoints.
  */
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\BaseControllers;
 
 use App\Concerns\HandlesApiResponse;
 use App\Concerns\HandlesValidation;
@@ -81,7 +81,7 @@ class BaseApiController extends Controller
 
             $response = $functionToRun() ?? [];
             // If the response is already a valid response type, return it directly
-            if (isset($response) || ! empty($response)) {
+            if (isset($response)) {
                 if ($this->isResponseType($response)) {
                     return $response;
                 }

@@ -11,6 +11,7 @@
  * It ensures all API responses are JSON and provides detailed, standardized error responses for API consumers.
  */
 
+use App\Concerns\HandlesApiResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -41,7 +42,10 @@ return Application::configure(basePath: dirname(__DIR__))
          * Returns standardized JSON error responses for common exception types.
          */
         $exceptions->render(function (Throwable $exception, $request) {
-            return \App\Concerns\HandlesApiResponse::handleGlobalException($exception, $request);
+            if ($request->expectsJson()) {
+                return HandlesApiResponse::handleGlobalException($exception, $request);
+            }
+            return parent::render($request, $exception);
         });
     })
     ->create();

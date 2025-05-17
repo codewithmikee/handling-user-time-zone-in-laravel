@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\BaseControllers\ProtectedApiController;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
@@ -26,6 +27,8 @@ class PostController extends ProtectedApiController
             $userId = $this->getCurrentUserId();
             $posts = Post::where('user_id', $userId)->paginate(10);
 
+            return new PostResource(Post::first());
+
             return $this->respondWithPagination(
                 $posts,
                 PostResource::class,
@@ -42,15 +45,13 @@ class PostController extends ProtectedApiController
      */
     public function store(StorePostRequest $request)
     {
-        // Auto-validated by StorePostRequest
-        $this->authorize('create', Post::class);
+        return $this->handleRequest(function () use ($request) {
 
-        $post = Post::create($request->validated());
+        $data = $request->validated();
 
-        return $this->respondSuccess(
-            new PostResource($post),
-            'Post created successfully',
-            201
-        );
+        $post = Post::create( ['user_id' => $this->getCurrentUserId(), ...$data]);
+
+        return  new PostResource($post);
+        }, $request, 'Post created successfully');
     }
 }

@@ -10,6 +10,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\BaseControllers\ProtectedApiController;
 use App\Http\Requests\StorePostRequest;
 use Illuminate\Http\Request;
 

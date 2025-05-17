@@ -1,0 +1,1 @@
+- [x] Standardize API response structure and error handling, update formatting, docs, and ensure all tests pass 
