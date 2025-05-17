@@ -46,13 +46,12 @@ trait HandlesAuth
      *
      * @throws HttpResponseException If not authenticated
      */
-    public function currentUser(): User
-    {
-        $user = $this->currentAuthenticatedUser();
-        if (! $user) {
-            return \App\Concerns\HandlesApiResponse::throwUnAuthenticated();
-        }
-
-        return \App\Models\User::find($user->id)->first();
+public function currentUser(): Authenticatable
+{
+    $user = $this->currentAuthenticatedUser();
+    if (!$user) {
+        $this->throwUnAuthenticated();
     }
+    return $user; // Directly return the authenticated user
+}
 }

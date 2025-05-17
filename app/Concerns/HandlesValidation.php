@@ -28,8 +28,7 @@ trait HandlesValidation
     protected function validate($dataToValidate, array $rules, array $messages = []): array
     {
         $validator = Validator::make($dataToValidate, $rules, $messages);
-
-            return $validator->validated();
-
+        $validator->validate(); // Throws ValidationException on failure
+        return $validator->validated();
     }
 }
