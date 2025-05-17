@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Services\TimeZoneHandlers\UserTimeZoneHandler as TimeZoneService;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class TimeZoneServiceTest extends TestCase
