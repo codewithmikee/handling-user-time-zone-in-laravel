@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class ProfileTest extends TestCase
 {
@@ -26,13 +26,13 @@ class ProfileTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'success', 'message', 'data' => ['name', 'email'], 'errors'
+                'success', 'message', 'data' => ['name', 'email'], 'errors',
             ])
             ->assertJson([
                 'data' => [
                     'name' => 'Test User',
                     'email' => 'test@example.com',
-                ]
+                ],
             ]);
     }
 

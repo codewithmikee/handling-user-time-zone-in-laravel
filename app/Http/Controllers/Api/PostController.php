@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostResource;
-use Throwable;
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 /**
@@ -18,13 +17,14 @@ class PostController extends ProtectedApiController
     /**
      * List paginated posts with standardized response.
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
-        return $this->handleRequest(function() use ($request) {
-            $posts = Post::paginate(10);
+        return $this->handleRequest(function () {
+
+            $userId = $this->getCurrentUserId();
+            $posts = Post::where('user_id', $userId)->paginate(10);
 
             return $this->respondWithPagination(
                 $posts,
@@ -38,7 +38,6 @@ class PostController extends ProtectedApiController
     /**
      * Store a new post (auto-validated by StorePostRequest).
      *
-     * @param StorePostRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StorePostRequest $request)

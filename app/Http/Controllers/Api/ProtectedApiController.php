@@ -1,4 +1,5 @@
 <?php
+
 /**
  * name: Mikiyas Birhanu
  * date: 2024-06-09
@@ -9,8 +10,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Concerns\HandlesAuth;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Concerns\{HandlesAuth};
 
 /**
  * Class ProtectedApiController
@@ -24,8 +25,6 @@ class ProtectedApiController extends BaseApiController
 
     /**
      * Constructor injects the current HTTP request and ensures parent initialization.
-     *
-     * @param Request $request
      */
     public function __construct(Request $request)
     {
@@ -42,7 +41,7 @@ class ProtectedApiController extends BaseApiController
     public static function middleware(): array
     {
         return [
-            'auth:sanctum' // Sanctum authentication middleware
+            'auth:sanctum', // Sanctum authentication middleware
         ];
     }
 }

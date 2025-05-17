@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Concerns\HandlesApiResponse;
 use Illuminate\Http\JsonResponse;
 use Tests\TestCase;
-use App\Http\Controllers\Concerns\HandlesApiResponse;
 
 class HandlesApiResponseTest extends TestCase
 {
     public function test_success_response_structure(): void
     {
-        $controller = new class {
+        $controller = new class
+        {
             use HandlesApiResponse;
-            public function callSuccess() {
+
+            public function callSuccess()
+            {
                 return $this->respondSuccess(['foo' => 'bar'], 'Success!', 201);
             }
         };
@@ -30,9 +33,12 @@ class HandlesApiResponseTest extends TestCase
 
     public function test_error_response_structure(): void
     {
-        $controller = new class {
+        $controller = new class
+        {
             use HandlesApiResponse;
-            public function callError() {
+
+            public function callError()
+            {
                 return $this->respondError('Error!', 400, ['foo' => 'bar']);
             }
         };

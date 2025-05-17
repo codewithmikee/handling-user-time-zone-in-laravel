@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Auth;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
 
 class LoginTest extends TestCase
 {
@@ -28,7 +28,7 @@ class LoginTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'success', 'message', 'data', 'errors'
+                'success', 'message', 'data', 'errors',
             ]);
         $this->assertIsString($response->json('data'));
     }

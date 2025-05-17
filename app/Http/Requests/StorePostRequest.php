@@ -9,13 +9,15 @@ class StorePostRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('create', Post::class);
+        // TODO: IF ANYONE NEEDS TO CHECK IF THE USER CAN CREATE A POST, USE THIS
+        // $this->user()->can('create', Post::class);
+        return true;
     }
 
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
+            'title' => 'nullable|string|max:255',
             'content' => 'required|string',
         ];
     }

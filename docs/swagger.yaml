@@ -22,8 +22,17 @@ paths:
                 properties:
                   message:
                     type: string
+                  success:
+                    type: boolean
+                  data:
+                    nullable: true
+                  errors:
+                    nullable: true
                 example:
+                  success: true
                   message: Hello, Laravel API!
+                  data: null
+                  errors: null
   /auth/register:
     post:
       summary: Register a new user

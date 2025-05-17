@@ -13,11 +13,9 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
 });
 
-
 Route::prefix('profile')->group(function () {
     Route::get('/', [ProfileController::class, 'index']);
 })->middleware('auth:sanctum');
-
 
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostController::class, 'index']);
