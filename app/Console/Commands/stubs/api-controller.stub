@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Api\BaseControllers\DummyParent;
+use App\Models\DummyModel;
+
+class DummyClass extends DummyParent
+{
+    public function index(Request $request)
+    {
+        //
+    }
+
+    public function store(Request $request)
+    {
+        //
+    }
+
+    public function update(Request $request, DummyModel $dummyModel)
+    {
+        //
+    }
+
+    public function destroy(Request $request, DummyModel $dummyModel)
+    {
+        //
+    }
+}
