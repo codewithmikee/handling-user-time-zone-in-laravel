@@ -1,182 +1,132 @@
-# Laravel API Starter Template
+# 🕒 Laravel User Time Zone Handler
 
-A robust Laravel API starter template with built-in authentication, standardized JSON responses, and extendable controllers using reusable traits. Ideal for quickly bootstrapping secure and maintainable RESTful APIs.
-
-**Author**: Mikiyas Birhanu  
-**GitHub**: [@codewithmikee](https://github.com/codewithmikee)  
-**Repo**: [github.com/codewithmikee/laravel-backend-starter-template](https://github.com/codewithmikee/laravel-backend-starter-template)
-
-# API Documentation
-
-API documentation and collections (Postman, Swagger/OpenAPI) are stored in the `docs/` folder at the project root.
+A plug-and-play solution for handling user time zones in Laravel. Automatically store, retrieve, and display dates/times in each user's preferred time zone—perfect for SaaS, dashboards, and any app with a global user base.
 
 ---
 
-## 📦 API Collections
+## 🚀 Features
 
-- **Postman Collection:**
-  - File: `docs/postman_collection.json`
-  - Import this file into Postman to test all API endpoints quickly.
-  - Includes example requests for registration, login, and profile fetch.
-
-- **Swagger/OpenAPI Spec:**
-  - File: `docs/swagger.yaml`
-  - Use with Swagger UI, Redoc, or compatible tools for interactive API docs and code generation.
-  - Describes all endpoints, request/response formats, and authentication requirements.
+- Detects and stores each user's preferred time zone
+- Converts all date/times to user's local time for display
+- Middleware for automatic time zone switching per request
+- Eloquent date casting helpers
+- Easy integration with authentication
+- Fallback to app default if user time zone is unset
 
 ---
 
-## ✨ Features
-- **Sanctum Authentication**: Ready-to-use JWT-like token-based auth.
-- **Standardized Responses**: Consistent JSON success/error formats via traits.
-- **Pre-configured Error Handling**: Automatic exceptions for:
-  - Validation (422)
-  - Authorization (403)
-  - Rate Limiting (429)
-  - Model/Route Not Found (404)
-- **Extendable Base Controllers**: Simplify CRUD operations with:
-  - `BaseApiController` (General APIs)
-  - `ProtectedApiController` (Auth-required endpoints)
-- **Reusable Controller Traits**: 
-  - `HandlesApiResponse`: Standardizes API responses
-  - `HandlesValidation`: Centralizes validation logic
-  - `HandlesAuth`: Authenticated user and authorization helpers
-- **Middleware**: Ensures all responses are JSON-formatted.
+## 📦 Installation
 
----
-
-## 🚀 Quick Start
-
-### 1. Clone & Setup
 ```bash
-git clone https://github.com/codewithmikee/laravel-backend-starter-template.git
-cd laravel-backend-starter-template
+git clone git@github.com:codewithmikee/handling-user-time-zone-in-laravel.git
+cd handling-user-time-zone-in-laravel
+sc install # or composer install
 cp .env.example .env
-composer install
 php artisan key:generate
 ```
 
-### 2. Configure Database
-Update `.env` with your database credentials:
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=laravel
-DB_USERNAME=root
-DB_PASSWORD=
+---
+
+## ⚙️ Setup
+
+1. **Add `time_zone` column to your users table:**
+
+```php
+// database/migrations/xxxx_xx_xx_add_time_zone_to_users.php
+Schema::table('users', function (Blueprint $table) {
+    $table->string('time_zone')->nullable()->after('email');
+});
 ```
 
-### 3. Run Migrations
+2. **Run migrations:**
 ```bash
 php artisan migrate
 ```
 
-### 4. Sanctum Setup
+3. **Add the middleware:**
+
+```php
+// app/Http/Kernel.php
+protected $middlewareGroups = [
+    'web' => [
+        // ... existing middleware ...
+        \App\Http\Middleware\SetUserTimeZone::class,
+    ],
+];
+```
+
+4. **Publish and customize the middleware if needed:**
+
 ```bash
-php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan make:middleware SetUserTimeZone
 ```
 
----
-
-## 🔧 Usage
-
-### Authentication Endpoints
-**Register**  
-`POST /api/auth/register`
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "secret123"
-}
-```
-
-**Login**  
-`POST /api/auth/login`
-```json
-{
-  "email": "john@example.com",
-  "password": "secret123",
-  "device_name": "iPhone"
-}
-```
-
-**Profile (Protected)**  
-`GET /api/profile`  
-*Header:* `Authorization: Bearer <token>`
-
----
-
-## 🛠 Extending Controllers & Traits
-### 1. Create a Protected Controller
+Example middleware logic:
 ```php
-use App\Http\Controllers\Api\ProtectedApiController;
-
-class UserController extends ProtectedApiController
+public function handle($request, Closure $next)
 {
-    public function index()
-    {
-        return $this->handleRequest(
-            fn() => User::all(),
-            $this->request,
-            'Users fetched successfully'
-        );
+    if (auth()->check() && auth()->user()->time_zone) {
+        date_default_timezone_set(auth()->user()->time_zone);
+    } else {
+        date_default_timezone_set(config('app.timezone'));
     }
+    return $next($request);
 }
 ```
 
-### 2. Use Traits for Custom Logic
+---
+
+## 🛠 Usage
+
+- **Set user time zone:**  
+  Let users select their time zone in their profile settings and save it to the `time_zone` column.
+
+- **Display dates in user's time zone:**  
+  Use Carbon's `setTimezone()` method:
+  ```php
+  $userTime = $event->start_at->setTimezone(auth()->user()->time_zone);
+  ```
+
+- **Fallback:**  
+  If the user has no time zone set, the app's default (`config('app.timezone')`) is used.
+
+---
+
+## 🧑‍💻 Example
+
 ```php
-use App\Http\Controllers\Concerns\HandlesApiResponse;
-
-class CustomController extends Controller
+// Controller example
+public function show(Event $event)
 {
-    use HandlesApiResponse;
-    // ...
-}
-```
-
-### 3. Custom Error Responses
-Throw errors directly in controllers:
-```php
-$this->respondError('Resource not found', 404);
-```
-
----
-
-## 📜 Response Format
-**Success**  
-```json
-{
-  "success": true,
-  "message": "Profile fetched successfully",
-  "data": { "name": "John", "email": "john@example.com" },
-  "errors": null
-}
-```
-
-**Error**  
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "data": null,
-  "errors": {"authorization": "Unauthenticated"}
+    $userTz = auth()->user()->time_zone ?? config('app.timezone');
+    $eventTime = $event->start_at->setTimezone($userTz);
+    return view('event.show', compact('event', 'eventTime'));
 }
 ```
 
 ---
 
-## 📌 Best Practices
-- Use `BaseApiController` for general endpoints.
-- Extend `ProtectedApiController` for auth-required routes.
-- Utilize `validateRequest()` in controllers for validation.
-- Use controller traits for reusable logic.
-- Environment-specific errors: Full details in `local/staging`, generic in `production`.
+## 📝 Customization
+
+- Change the column name or logic as needed for your user model.
+- Extend the middleware to support API tokens or guests.
+- Add frontend time zone detection (e.g., using JS Intl API) for auto-suggestions.
 
 ---
 
-**Happy Coding!** 🚀  
-*Maintained by [Mikiyas Birhanu](https://github.com/codewithmikee)*
-```
+## 🧪 Testing
+
+- Log in as different users with different time zones.
+- Check that all displayed times match the user's selected time zone.
+
+---
+
+## 🤝 Contributing
+
+Pull requests and issues welcome! Please open an issue to discuss your idea before submitting a PR.
+
+---
+
+## 📄 License
+
+MIT
