@@ -9,3 +9,14 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+
+/* resources/css/app.css */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+form > div {
+    margin-bottom: 15px;
+}
