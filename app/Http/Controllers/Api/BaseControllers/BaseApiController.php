@@ -91,7 +91,7 @@ class BaseApiController extends Controller
             return $this->respondSuccess($response, $message);
         } catch (\Throwable $e) {
             // Handle and log exceptions
-            return $this->respondInternalError($e);
+                return $this->handleGlobalException($e, $this->request);
         }
     }
 }

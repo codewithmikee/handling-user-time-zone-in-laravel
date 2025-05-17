@@ -107,52 +107,21 @@ trait HandlesApiResponse
     public static function handleGlobalException(Throwable $exception, Request $request)
     {
 
-        Log::error('Exception class: '.get_class($exception));
+        Log::warning('handleGlobalException === class: '.get_class($exception), [
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+        ]);
         // Validation errors (422)
+
         if ($exception instanceof ValidationException) {
-
             return self::respondValidationErrors($exception->errors());
-
         }
 
-        // Authorization errors (403)
-        if ($exception instanceof AuthorizationException) {
+           // Authorization errors (403)
+           if ($exception instanceof AuthorizationException) {
             return self::throwUnAuthorized('Unauthorized', ['authorization' => $exception->getMessage()]);
 
         }
-
-        // Model not found (404)
-        if ($exception instanceof ModelNotFoundException) {
-            $modelName = strtolower(class_basename($exception->getModel()));
-
-            return response()->json([
-                'success' => false,
-                'message' => "{$modelName} with given id not found",
-                'data' => null,
-                'errors' => ['error' => 'DATA_NOT_FOUND'],
-            ], 404);
-        }
-
-        // Route not found (404)
-        if ($exception instanceof NotFoundHttpException) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Route not found',
-                'data' => null,
-                'errors' => ['error' => 'ROUTE_NOT_FOUND'],
-            ], 404);
-        }
-
-        // Method not allowed (405)
-        if ($exception instanceof MethodNotAllowedHttpException) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Method not allowed',
-                'data' => null,
-                'errors' => ['method' => 'Invalid HTTP method'],
-            ], 405);
-        }
-
         // Too many requests (429)
         if ($exception instanceof ThrottleRequestsException) {
             return response()->json([
@@ -246,15 +215,16 @@ trait HandlesApiResponse
     public static function throwOrReturnInternalError(Throwable $exception): JsonResponse
     {
 
-        Log::error($exception->getMessage(), [
-            'should throw verbose errors' => self::shouldThrowVerboseErrors(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'trace' => $exception->getTraceAsString(),
-        ]);
-        $errors = [];
+
+
         // for testing purposes, throw the exception
         if (self::shouldThrowVerboseErrors()) {
+            Log::error($exception->getMessage(), [
+                'should throw verbose errors called on throwOrReturnInternalError' => self::shouldThrowVerboseErrors(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
             return self::respondFormattedError('Internal server error', 500, [
                 'error' => $exception->getMessage(),
                 'trace' => $exception->getTraceAsString(),

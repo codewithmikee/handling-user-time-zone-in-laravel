@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
  */
 trait HandlesValidation
 {
+    use HandlesApiResponse;
     /**
      * Validate request data and return validated data array.
      *
@@ -28,30 +29,7 @@ trait HandlesValidation
     {
         $validator = Validator::make($dataToValidate, $rules, $messages);
 
-        if ($validator->fails()) {
-            $this->respondCustomValidation($validator->errors()->toArray());
-        }
+            return $validator->validated();
 
-        return $validator->validated();
-    }
-
-    /**
-     * Throw a custom validation error response (HTTP 422 Unprocessable Entity).
-     *
-     * @param  array  $errors  Key-value array of validation errors
-     * @param  int  $status  HTTP status code (default: 422)
-     *
-     * @throws HttpResponseException
-     */
-    protected function respondCustomValidation(array $errors, int $status = 422): void
-    {
-        throw new \Illuminate\Http\Exceptions\HttpResponseException(
-            response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'data' => null,
-                'errors' => $errors,
-            ], $status)
-        );
     }
 }

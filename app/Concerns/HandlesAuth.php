@@ -15,7 +15,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
  */
 trait HandlesAuth
 {
-    use AuthorizesRequests;
+    use AuthorizesRequests, HandlesApiResponse;
 
     /**
      * Get the currently authenticated user.
@@ -35,8 +35,7 @@ trait HandlesAuth
     {
         $user = $this->currentAuthenticatedUser();
         if (! $user) {
-            \App\Concerns\HandlesApiResponse::throwUnAuthenticated();
-            exit; // Ensure no further code runs
+            return \App\Concerns\HandlesApiResponse::throwUnAuthenticated();
         }
 
         return $user->id;
@@ -51,8 +50,7 @@ trait HandlesAuth
     {
         $user = $this->currentAuthenticatedUser();
         if (! $user) {
-            \App\Concerns\HandlesApiResponse::throwUnAuthenticated();
-            exit; // Ensure no further code runs
+            return \App\Concerns\HandlesApiResponse::throwUnAuthenticated();
         }
 
         return \App\Models\User::find($user->id)->first();

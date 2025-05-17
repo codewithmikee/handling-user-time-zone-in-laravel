@@ -20,4 +20,8 @@ Route::prefix('profile')->group(function () {
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostController::class, 'index']);
     Route::post('/', [PostController::class, 'store']);
+    Route::prefix('{post}')->group(function () {
+        Route::put('/', [PostController::class, 'update']);
+        Route::delete('/', [PostController::class, 'destroy']);
+    });
 })->middleware('auth:sanctum');

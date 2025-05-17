@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseControllers\ProtectedApiController;
 use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -27,7 +28,6 @@ class PostController extends ProtectedApiController
             $userId = $this->getCurrentUserId();
             $posts = Post::where('user_id', $userId)->paginate(10);
 
-            return new PostResource(Post::first());
 
             return $this->respondWithPagination(
                 $posts,
@@ -54,4 +54,32 @@ class PostController extends ProtectedApiController
         return  new PostResource($post);
         }, $request, 'Post created successfully');
     }
+
+
+    public function update(UpdatePostRequest $request, Post $post)
+    {
+        return $this->handleRequest(function () use ($request, $post) {
+
+            if ($post->user_id !== $this->getCurrentUserId()) {
+                return $this->throwUnAuthorized('Unauthorized', ['invalid_owner' => 'You are not the owner of this post']);
+            }
+
+            $post->update($request->validated());
+            return new PostResource($post);
+        }, $request, 'Post updated successfully');
+    }
+
+    public function destroy(Request $request, Post $post)
+    {
+        return $this->handleRequest(function () use ($request, $post) {
+
+            if ($post->user_id !== $this->getCurrentUserId()) {
+                return $this->throwUnAuthorized('Unauthorized', ['invalid_owner' => 'You are not the owner of this post']);
+            }
+
+            $post->delete();
+            return $this->respondSuccess(null, 'Post deleted successfully');
+        }, $request, 'Post deleted successfully');
+    }
+
 }
